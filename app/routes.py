@@ -1,4 +1,4 @@
-from flask_restx import Namespace, Resource , abort
+from flask_restx import Namespace, Resource, abort, fields
 from flask import request
 
 
@@ -12,21 +12,20 @@ users = [
 api_ns = Namespace("users", description="Users API",path="/api/")
 
 
+user_model = api_ns.model("User",{
+    "name" : fields.String(required=True, description="User name"),
+    "age" : fields.Integer(required=True, description="User age")
+})
+
 
 @api_ns.route("/users")
 class Users(Resource):
     def get(self):
         return users
     
+    @api_ns.expect(user_model, validate=True)
     def post(self):
         body = request.json
-        print(body,'body')
-        #simple validation
-        if not body : 
-            abort(400,"No Input data provided")
-
-        if "name" not in body or "age" not in body:
-            abort(400,"name and age are reqired")
 
         new_id = max(user["id"] for user in users) + 1
 
@@ -60,23 +59,16 @@ class User(Resource):
             
         abort(404,"User not found")
 
-
+    @api_ns.expect(user_model, validate=True)
     def put(self,user_id):
         body = request.json
-
-        if not body : 
-            abort(400,"No input body provided")
-
-        if "name" not in body or "age" not in body:
-            abort(400,"name and age are reqired")
 
         for user in users:
             if user["id"] == user_id :
                 user["name"] = body.get("name")
                 user["age"] = body.get("age")
             return user,200
-        
-        abort(404,"user not found")
+    
 
     
         

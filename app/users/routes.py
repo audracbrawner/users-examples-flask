@@ -1,6 +1,14 @@
-from flask_restx import Namespace, Resource, abort, fields
-from flask import request
+from flask_restx import Namespace, Resource, abort, fields, Api
+from flask import request, Blueprint
 
+
+# Blueprint
+users_bp = Blueprint("users", __name__)
+
+# RESTX API attached to blueprint
+api = Api(users_bp, title="Users API", version="1.0")
+
+api_ns = Namespace("users", description="Users API",path="/api/")
 
 users = [
     {"id": 1001, "name": "mina", "age": 30},
@@ -9,7 +17,7 @@ users = [
 ]
 
 
-api_ns = Namespace("users", description="Users API",path="/api/")
+
 
 
 user_model = api_ns.model("User",{

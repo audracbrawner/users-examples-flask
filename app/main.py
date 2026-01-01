@@ -11,7 +11,7 @@ def create_app():
         description="RESTful API for users"
     )
 
-    from app.routes import api_ns
+    from app.users.routes import api_ns
     api.add_namespace(api_ns)
 
     return app

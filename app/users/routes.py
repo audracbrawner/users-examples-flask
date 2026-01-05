@@ -2,13 +2,8 @@ from flask_restx import Namespace, Resource, abort, fields, Api
 from flask import request, Blueprint
 
 
-# Blueprint
-users_bp = Blueprint("users", __name__)
 
-# RESTX API attached to blueprint
-api = Api(users_bp, title="Users API", version="1.0")
-
-api_ns = Namespace("users", description="Users API",path="/api/")
+users_ns = Namespace("users", description="Users API")
 
 users = [
     {"id": 1001, "name": "mina", "age": 30},
@@ -20,18 +15,18 @@ users = [
 
 
 
-user_model = api_ns.model("User",{
+user_model = users_ns.model("User",{
     "name" : fields.String(required=True, description="User name"),
     "age" : fields.Integer(required=True, description="User age")
 })
 
 
-@api_ns.route("/users")
+@users_ns.route("/")
 class Users(Resource):
     def get(self):
         return users
     
-    @api_ns.expect(user_model, validate=True)
+    @users_ns.expect(user_model, validate=True)
     def post(self):
         body = request.json
 
@@ -48,7 +43,7 @@ class Users(Resource):
         return new_user,201
     
 
-@api_ns.route("/users/<int:user_id>")
+@users_ns.route("/users/<int:user_id>")
 class User(Resource):
     def get(self, user_id):
         for user in users:
@@ -67,7 +62,7 @@ class User(Resource):
             
         abort(404,"User not found")
 
-    @api_ns.expect(user_model, validate=True)
+    @users_ns.expect(user_model, validate=True)
     def put(self,user_id):
         body = request.json
 
